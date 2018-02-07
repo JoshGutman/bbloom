@@ -253,10 +253,10 @@ func (bl Bloom) JSONMarshal() []byte {
 }
 
 func (b1 Bloom) BinaryMarshal(outfile string) {
-	var buf bytes.Buffer
-	export := binaryExport{b1.bitset, b1.setLocs}
+	buf := new(bytes.Buffer)
+	//export := &binaryExport{b1.bitset, b1.setLocs}
 	
-	binary.Write(&buf, binary.BigEndian, &export)
+	binary.Write(buf, binary.BigEndian, b1.bitset)
 	
 	file, err := os.Create(outfile)
 	if err != nil {
