@@ -27,6 +27,8 @@ import (
 	"math"
 	"sync"
 	"unsafe"
+	"binary"
+	"os"
 )
 
 // helper
@@ -258,11 +260,11 @@ func (b1 Bloom) BinaryMarshal(outfile string) {
 	
 	file, err := os.Create(outfile)
 	if err != nil {
-		log.fatal(err)
+		log.Fatal(err)
 	}
 	defer file.Close()
 	
-	_, err := file.Write(buf.Bytes())
+	_, err = file.Write(buf.Bytes())
 	if err != nil {
 		log.Fatal(err)
 	}
