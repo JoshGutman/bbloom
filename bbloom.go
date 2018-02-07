@@ -27,7 +27,7 @@ import (
 	"math"
 	"sync"
 	"unsafe"
-	"binary"
+	"encoding/binary"
 	"os"
 )
 
