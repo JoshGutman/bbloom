@@ -94,6 +94,11 @@ type bloomJSONImExport struct {
 	SetLocs   uint64
 }
 
+type binaryExport struct {
+	FilterSet []uint64
+	SetLocs   uint64
+}
+
 // JSONUnmarshal
 // takes JSON-Object (type bloomJSONImExport) as []bytes
 // returns bloom32 / bloom64 object
@@ -244,6 +249,25 @@ func (bl Bloom) JSONMarshal() []byte {
 	}
 	return data
 }
+
+func (b1 Bloom) BinaryMarshal(outfile string) {
+	var buf bytes.Buffer
+	export := binaryExport{b1.bitset, b1.setLocs)
+	
+	binary.Write(&buf, binary.BigEndian, export)
+	
+	file, err := os.Create(outfile)
+	if err != nil {
+		log.fatal(err)
+	}
+	defer file.Close()
+	
+	_, err := file.Write(buf.Bytes())
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
 
 // // alternative hashFn
 // func (bl Bloom) fnv64a(b *[]byte) (l, h uint64) {
