@@ -253,9 +253,36 @@ func (bl Bloom) JSONMarshal() []byte {
 }
 
 func (b1 Bloom) BinaryMarshal(outfile string) {
-	var buf bytes.Buffer
-	//export := &binaryExport{b1.bitset, b1.setLocs}
+	/*
+	Current file model:
 	
+		--------------------------------------\-----------
+		|   8    |   8    |   8    |          N          |
+		--------------------------------------\-----------
+		  offset   shift   setLocs         bitset
+	
+	offset == total number of bytes of itself + shift + setLocs (in this case, 24)
+	*/
+	
+	var buf bytes.Buffer
+	
+	var metadata = []uint64 {b1.shift, b1.setLocs}
+	offset := uint64(8)
+	
+	// Calculate the offset that will occur due to metadata
+	for _, md := range metadata {
+		offset += reflect.TypeOf(md).Size()
+	}
+	
+	// Write the offset first
+	binary.Write(&buf, binary.BigEndian, offset)
+	
+	// Write the metadata
+	for _, md := range metadata {
+		binary.Write(&buf, binary.BigEndian, md)
+	}
+	
+	// Write the bitset
 	binary.Write(&buf, binary.BigEndian, b1.bitset)
 	
 	file, err := os.Create(outfile)
