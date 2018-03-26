@@ -29,6 +29,7 @@ import (
 	"unsafe"
 	"encoding/binary"
 	"os"
+	"reflect"
 )
 
 // helper
@@ -267,7 +268,7 @@ func (b1 Bloom) BinaryMarshal(outfile string) {
 	
 	var buf bytes.Buffer
 	
-	var metadata = []uint64 {b1.shift, b1.setLocs, b1.size, b1.numElem}
+	var metadata = []uint64 {b1.shift, b1.setLocs, b1.size, b1.ElemNum}
 	offset := uint64(8)
 	
 	// Calculate the offset that will occur due to metadata
