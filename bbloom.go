@@ -34,6 +34,7 @@ import (
 // helper
 var mask = []uint8{1, 2, 4, 8, 16, 32, 64, 128}
 
+
 func getSize(ui64 uint64) (size uint64, exponent uint64) {
 	if ui64 < uint64(512) {
 		ui64 = uint64(512)
@@ -145,7 +146,7 @@ type Bloom struct {
 // Add
 // set the bit(s) for entry; Adds an entry to the Bloom filter
 func (bl *Bloom) Add(entry []byte) {
-	l, h := bl.sipHash(entry)
+	l, h := sipHash(bl.shift, entry)
 	for i := uint64(0); i < (*bl).setLocs; i++ {
 		(*bl).Set((h + i*l) & (*bl).size)
 		(*bl).ElemNum++
@@ -164,7 +165,7 @@ func (bl *Bloom) AddTS(entry []byte) {
 // check if bit(s) for entry is/are set
 // returns true if the entry was added to the Bloom Filter
 func (bl Bloom) Has(entry []byte) bool {
-	l, h := bl.sipHash(entry)
+	l, h := sipHash(bl.shift, entry)
 	for i := uint64(0); i < bl.setLocs; i++ {
 		switch bl.IsSet((h + i*l) & bl.size) {
 		case false:
@@ -256,17 +257,17 @@ func (b1 Bloom) BinaryMarshal(outfile string) {
 	/*
 	Current file model:
 	
-		--------------------------------------\-----------
-		|   8    |   8    |   8    |          N          |
-		--------------------------------------\-----------
-		  offset   shift   setLocs         bitset
+		--------------------------------------------------------\-----------
+		|   8    |   8    |   8    |   8    |   8    |          N          |
+		--------------------------------------------------------\-----------
+		  offset   shift   setLocs    size    numElem         bitset
 	
 	offset == total number of bytes of itself + shift + setLocs (in this case, 24)
 	*/
 	
 	var buf bytes.Buffer
 	
-	var metadata = []uint64 {b1.shift, b1.setLocs}
+	var metadata = []uint64 {b1.shift, b1.setLocs, b1.size, b1.numElem}
 	offset := uint64(8)
 	
 	// Calculate the offset that will occur due to metadata
