@@ -273,7 +273,7 @@ func (b1 Bloom) BinaryMarshal(outfile string) {
 	
 	// Calculate the offset that will occur due to metadata
 	for _, md := range metadata {
-		offset += reflect.TypeOf(md).Size()
+		offset += uint64(reflect.TypeOf(md).Size())
 	}
 	
 	// Write the offset first
