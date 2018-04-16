@@ -285,7 +285,7 @@ func (b1 Bloom) BinaryMarshal(outfile string) {
 	}
 	
 	// Write the bitset
-	binary.Write(&buf, binary.BigEndian, b1.bitset)
+	binary.Write(&buf, binary.LittleEndian, b1.bitset)
 	
 	file, err := os.Create(outfile)
 	if err != nil {
