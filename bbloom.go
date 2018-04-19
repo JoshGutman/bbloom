@@ -254,21 +254,21 @@ func (bl Bloom) JSONMarshal() []byte {
 	return data
 }
 
-func (b1 Bloom) BinaryMarshal(outfile string) {
+func (b1 Bloom) BinaryMarshal(outfile string, k int) {
 	/*
 	Current file model:
 	
-		--------------------------------------------------------\-----------
-		|   8    |   8    |   8    |   8    |   8    |          N          |
-		--------------------------------------------------------\-----------
-		  offset   shift   setLocs    size    numElem         bitset
+	------------------------------------------------------------------\-----------
+	|   8    |   8    |   8    |   8    |   8    |   8    |           N          |
+	------------------------------------------------------------------\-----------
+	  offset   shift   setLocs    size    numElem    k             bitset
 	
-	offset == total number of bytes of itself + shift + setLocs (in this case, 24)
+	offset == total number of bytes of itself + all metadata
 	*/
 	
 	var buf bytes.Buffer
 	
-	var metadata = []uint64 {b1.shift, b1.setLocs, b1.size, b1.ElemNum}
+	var metadata = []uint64 {b1.shift, b1.setLocs, b1.size, b1.ElemNum, uint64(k)}
 	offset := uint64(8)
 	
 	// Calculate the offset that will occur due to metadata
